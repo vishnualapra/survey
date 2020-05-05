@@ -41,6 +41,10 @@
 					<span class="login100-form-title p-b-59">
 						Covid-19 Survey
 					</span>
+					{% if msg == "completed"%}<h3 style="color:green; text-align:center">You are Successfully Completed this Survey.<br>Thank You.</h1>
+					{% elif msg == "already_completed" %}
+					<h3 style="color:orange;  text-align:center">You are already Completed this Survey</h1>
+					{% else %}
 
 					<div class="wrap-input100 validate-input" data-validate="Name is required">
 						<span class="label-input100">Full Name</span>
@@ -69,6 +73,7 @@
 
 						
 					</div>
+					{% endif %}
 				</form>
 			</div>
 		</div>

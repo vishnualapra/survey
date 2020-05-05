@@ -42,6 +42,7 @@ class SurveyResult(models.Model):
     participant = models.ForeignKey(Participants,on_delete=models.PROTECT)
     location = models.CharField(max_length=100)
     job = models.CharField(max_length=100)
+    industry = models.CharField(max_length=100)
     corona_affects_financially = models.BooleanField()
     lockdown_activites = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

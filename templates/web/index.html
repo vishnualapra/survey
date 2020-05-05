@@ -63,23 +63,23 @@
         <div class="row no-gutters">
             <div class="col-lg-4">
                 <div id="left_form">
-                    <figure><img src="./Magnifica _ Questionnaire Form Wizard by Ansonika_files/info_graphic_1.svg" alt="" width="100" height="100"></figure>
+                    <figure><img src="{% static 'web/info_graphic_1.svg' %}" alt="" width="100" height="100"></figure>
                     <h2>CORONAVIRUS <span>Health Questionnaire</span></h2>
-                    <p> {% if msg == 'not_completed' %}Welcome back <b style="color:yellow;">{{ request.session.name }}</b>, it seems your email(<b style="color:yellow;">{{ request.session.email}}</b>) already logined for this Survey, you can complete the survey now.{% else %}
-                    Welcome <b style="color:yellow;">{{ request.session.name }}</b>,logined email id is <b style="color:yellow;">{{ request.session.email }}</b>
+                    <p> {% if msg == 'not_completed' %}Welcome back <b style="color:yellow;">{{ request.session.name }}</b>, it seems your email(<b style="color:yellow;"  id="uemail">{{ request.session.email}}</b>) already logined for this Survey, you can complete the survey now.{% else %}
+                    Welcome <b style="color:yellow;">{{ request.session.name }}</b>,logined email id is <b style="color:yellow;" id="uemail">{{ request.session.email }}</b>
                     {% endif %}</p>
                     
                    
                 </div>
             </div>
             <div class="col-lg-8">
-                <div id="wizard_container" class="wizard" novalidate="novalidate">
+                <div id="wizard_container" class="wizard">
                     <div id="top-wizard">
                         <div id="progressbar" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="ui-progressbar-value ui-widget-header ui-corner-left" style="display: none; width: 0%;"></div></div>
-                        <span id="location"></span>
+                        <span id="loc"></span>
                     </div>
                     <!-- /top-wizard -->
-                    <form  method="post" class="fl-form fl-style-1">{% csrf_token %}
+                    <form id="mform"  method="post" class="fl-form fl-style-1">{% csrf_token %}
                        
                         <div id="middle-wizard" class="wizard-branch wizard-wrapper">
 
@@ -88,27 +88,27 @@
                                 <div class="form-group add_top_30">
                                     
                                     <div class="fl-wrap fl-wrap-input fl-is-required"><label for="name" class="fl-label">Your Location</label>
-                                    <input type="text" name="location" id="location" class="form-control required fl-input" onchange="getVals(this, 'name_field');" placeholder="Your Location"></div>
+                                    <input onchange="foo(this);" type="text" name="location" id="location" class="form-control fl-input" placeholder="Your Location" required></div>
                                 </div>
                                  <h3 class="main_question"><i class="arrow_right"></i>What is your Proffession & Industry?</h3>
                                  <div class="form-group add_top_30">
                                     
                                     <div class="fl-wrap fl-wrap-input fl-is-required"><label for="name" class="fl-label">Your Job</label>
-                                    <input type="text" name="job" id="job" class="form-control required fl-input" onchange="getVals(this, 'name_field');" placeholder="Your Job"></div>
+                                    <input type="text" name="job" id="job" class="form-control required fl-input" onchange="foo(this);" placeholder="Your Job" required></div>
                                 </div>
                                  <div class="form-group add_top_30">
                                     
                                     <div class="fl-wrap fl-wrap-input fl-is-required"><label for="name" class="fl-label">Job Industry</label>
-                                    <input type="text" name="industry" id="industry" class="form-control required fl-input" onchange="getVals(this, 'name_field');" placeholder="Your Job Industry"></div>
+                                    <input type="text" name="industry" id="industry" class="form-control required fl-input" onchange="foo(this);" placeholder="Your Job Industry" required></div>
                                 </div>
                                 <h3 class="main_question"><i class="arrow_right"></i>Does corona affect your financial stability?</h3>
                                 <div class="form-group">
                                     <label class="container_radio version_2">Yes
-                                        <input type="radio" name="question_3" value="Yes" class="required">
+                                        <input type="radio" name="question_3" id="ryes" onclick="$.cookie('stability',this.value);" value="Yes" class="required">
                                         <span class="checkmark"></span>
                                     </label>
                                     <label class="container_radio version_2">No
-                                        <input type="radio" name="question_3" value="No" class="required">
+                                        <input selected type="radio" name="question_3" value="No" id="rno" onclick="$.cookie('stability',this.value);" class="required">
                                         <span class="checkmark"></span>
                                     </label>
                                 </div>
@@ -117,7 +117,7 @@
 </h3>
                                 <div class="form-group add_top_30">
                                     
-                                    <div class="fl-wrap fl-wrap-input fl-is-required"><textarea style="width:500px;" rows=5  for="details" name="description" class="fl-label"></textarea></div>
+                                    <div class="fl-wrap fl-wrap-input fl-is-required"><textarea style="width:500px;" rows=5  for="details" name="description" id="description"  onchange="foo(this);" class="fl-label"></textarea></div>
                                 </div>
                                  <div class="form-group add_top_30">
                                     
@@ -146,13 +146,21 @@
                              {% for i in files %}
                              <tr>
                                 <td>{{ i.file_details.file_name }}</td>
-                                <td><a class="button" href="{{ i.file_details.file.url }}" target="_blank" style="background_color:red;">Download / View</a></td>
+                                <td>
+                                {% if i.is_downloaded == False %}
+                                <form method="post">{% csrf_token %}
+                                <input type="text" value="{{ i.id }}" name="fid" hidden>
+                                <button class="button" type="submit" style="background_color:red;">Download / View</button>
+                                </form>
+                                {% else %}
+                                <b style="color:green;">&#10004; Downloaded</b>
+                                {% endif %}
+                                </td>
                              </tr>
                              {% endfor %}
                              </table>
                              <div class="form-group add_top_30">
-                                    
-                                    <div class="fl-wrap fl-wrap-input fl-is-required"  style="float:right;"><input type="Submit" class="button btn_1"></div>
+                                    <div class="fl-wrap fl-wrap-input fl-is-required"  style="float:right;"><input id="sbtn"  type="Submit" class="button btn_1"></div>
                                 </div>
                             
                             </div>
@@ -234,17 +242,107 @@
 		<!-- /.modal-dialog -->
 	</div>
 	<!-- /.modal -->
-	
+	<input type='number' id="hidvalue" value={{ sucf }} hidden>
 	<!-- COMMON SCRIPTS -->
 	<script src="{% static 'web/jquery-3.2.1.min.js.download' %}"></script>
-    <script src="{% static 'web/common_scripts.min.js.download' %}"></script>
+    {% comment %} <script src="{% static 'web/common_scripts.min.js.download' %}"></script>
 	<script src="{% static 'web/velocity.min.js.download' %}"></script>
-	<script src="{% static 'web/common_functions.js.download' %}"></script>
+	<script src="{% static 'web/common_functions.js.download' %}"></script> {% endcomment %}
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
 	<!-- Wizard script-->
 	{% comment %} <script src="{% static 'web/func_1.js.download' %}"></script> {% endcomment %}
 <script>
-alert(v1);
+function foo(sel){
+    $.cookie(sel.name,sel.value);
+    var uemail = document.getElementById('uemail').innerText;
+     $.cookie('uemail',uemail);
+}
+
+$( document ).ready(function() { 
+    uemail = document.getElementById('uemail').innerText;
+    if ($.cookie('uemail') == uemail) {
+       
+            if (typeof $.cookie('location') === 'undefined') {
+                document.getElementById('location').value = "";
+                }
+            else {
+                document.getElementById('location').value = $.cookie('location');
+            }
+
+            if (typeof $.cookie('job') === 'undefined') {
+                console.log('und');
+                }
+            else {
+                document.getElementById('job').value = $.cookie('job');
+            }
+            if (typeof $.cookie('industry') === 'undefined') {
+                document.getElementById('industry').value = "";
+                }
+            else {
+                document.getElementById('industry').value = $.cookie('industry');
+            }
+
+            if ($.cookie('stability') === 'Yes') {
+                document.getElementById("ryes").checked = true;
+                }
+
+                if ($.cookie('stability') === 'No') {
+                document.getElementById("rno").checked = true;
+                }
+
+
+                if (typeof $.cookie('description') === 'undefined') {
+                document.getElementById('description').value = "";
+                }
+            else {
+                document.getElementById('description').value = $.cookie('description');
+            }
+    }
+   
+    
+});
+$('#sbtn').click(function(){
+    
+        if ($('#location').val() == ''){
+            alert('Please Enter your Location');
+            $('#location').focus();
+        }
+        else if ($('#job').val() == ''){
+            alert('Please Enter your Job');
+            $('#job').focus();
+        }
+
+         else if ($('#industry').val() == ''){
+            alert('Please Enter your Job Industry');
+            $('#industry').focus();
+        }
+    else if (!$("input[name='question_3']:checked").val()) {
+        alert('please selectan option for -Does corona affect your financial stability?');
+  
+        }
+        else if ($('#description').val() == ''){
+            alert('Please Enter:How did you manage to effectively use your time during lockdown?');
+            $('#description').focus();
+        }
+       else if ($('#hidvalue').val() > 0){
+                alert('Please Download All files before submitting.')
+            }
+            else{
+                 $('#mform').submit();
+                
+    }
+    
+
+
+           
+
+    
+
+
+    
+    
+})
 </script>
 
 </body></html>
